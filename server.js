@@ -1,5 +1,5 @@
 import express from 'express';
-import {readData,writeData,updateData,deleteData} from './utilities.js'
+import {readData,writeData,updateData,deleteData,countProducts, lowStocks, outOfStocks} from './utilities.js'
 
 
 const app = express();
@@ -45,8 +45,45 @@ app.delete('/deleteData/:id', async (req,res) =>{
     }
 })
 
+app.get('/countProducts', async (req,res) =>{
+    try{
+        const numOfProducts =  await countProducts()
+        
+        res.status(200).send(numOfProducts);
+    } catch (err) {
+        res.status(500).send({message : err.message});
+    }
+})
+
+
+app.get('/lowStocks', async (req,res) => {
+    try{
+        const lowStockProducts = await lowStocks();
+        
+        res.status(200).send(lowStockProducts);
+    } catch {
+         res.status(500).send({message : err.message});
+    }
+})
+
+app.get('/outOfStock', async (req,res) => {
+    try{
+        const outOfStock = await outOfStocks();
+        
+        res.status(200).send(outOfStock);
+    } catch {
+         res.status(500).send({message : err.message});
+    }
+})
 
 
 
-app.listen(3000);
-console.log("server is listening to port 3000");
+const listen = () => {
+    const PORT = 3000;
+    app.listen(PORT,() =>{
+        console.log(`Server is listening to port: ${PORT}`)
+    })
+}
+
+
+listen();

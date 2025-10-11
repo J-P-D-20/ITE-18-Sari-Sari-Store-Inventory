@@ -59,3 +59,44 @@ export async function deleteData(id) {
     }
     
 }
+
+export async function countProducts() {
+    try{
+        const data = await readData();
+
+        const numberOfProducts = data.length;
+
+        return numberOfProducts;
+    } catch (err){
+        console.error("Unexpected Error: ", err);
+    }
+}
+
+export async function lowStocks(){
+      try{
+        const data = await readData();
+
+        const lowStockProducts = data.filter(product => product.Quantity < 10);
+
+        return lowStockProducts;
+
+        
+    } catch (err){
+        console.error("Unexpected Error: ", err);
+    }
+}
+
+
+export async function outOfStocks(){
+      try{
+        const data = await readData();
+
+        const lowStockProducts = data.filter(product => product.Quantity == 0);
+
+        return lowStockProducts;
+
+        
+    } catch (err){
+        console.error("Unexpected Error: ", err);
+    }
+}
