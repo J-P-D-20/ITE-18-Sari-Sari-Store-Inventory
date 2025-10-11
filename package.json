@@ -1,18 +1,21 @@
 {
   "name": "ite-18-sari-sari_inventory",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sari-Sari Store Inventory Application",
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
-    "start" : "nodemon server.js"
+    "start": "electron .",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "electron": "^33.0.0"
   }
 }
