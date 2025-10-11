@@ -23,21 +23,19 @@ export async function writeData(data) {
 export async function updateData(id, update){
     try{
         const data = await readData();
-        const parsed = JSON.parse(data);
 
-        const index = parsed.findIndex(product => product.id === id);
+        const index = data.findIndex(product => product.id === id);
 
         if(index === -1){
             throw new Error(`Item with ID "${id}" not found`);
         }
 
-        parsed[index] = {...parsed[index], ...update};
-        await writeData(parsed);
-        return parsed[index];
+        data[index] = {...data[index], ...update};
+        await writeData(data);
+        return data[index];
 
     } catch (err){
         console.error("Unexpected Error: ", err);
-
     }
 }
 
@@ -91,9 +89,9 @@ export async function outOfStocks(){
       try{
         const data = await readData();
 
-        const lowStockProducts = data.filter(product => product.Quantity == 0);
+        const outOfStockProducts = data.filter(product => product.Quantity === 0);
 
-        return lowStockProducts;
+        return outOfStockProducts;
 
         
     } catch (err){
