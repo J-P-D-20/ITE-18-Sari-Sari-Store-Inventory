@@ -3,111 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sari-Sari Store Inventory</title>
+    <title>Sari-Sari Store - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📦 Sari-Sari Store Inventory</h1>
-            <p>Manage your store inventory efficiently</p>
-        </div>
-
-        <div class="content">
-            <div class="controls">
-                <div class="search-container">
-                    <input 
-                        type="text" 
-                        id="searchInput" 
-                        placeholder="🔍 Search by product name..."
-                    >
-                </div>
-                <div class="button-group">
-                    <button class="btn-primary" id="addBtn">+ Add Product</button>
-                    <button class="btn-primary" id="clearSearchBtn" style="display: none;">Clear Search</button>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">📦</div>
+                    <span>Sari-Sari</span>
                 </div>
             </div>
+            
+            <nav class="sidebar-nav">
+                <a href="index.html" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="inventory.html" class="nav-item">
+                    <span class="nav-icon">📦</span>
+                    <span class="nav-text">Inventory</span>
+                </a>
+                <a href="logs.html" class="nav-item">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">Activity Logs</span>
+                </a>
+                <a href="profile.html" class="nav-item">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-text">Profile</span>
+                </a>
+            </nav>
 
-            <div class="stats">
-                <div class="stat-card">
-                    <span class="stat-label">Total Products</span>
-                    <span class="stat-value" id="totalProducts">0</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Low Stock</span>
-                    <span class="stat-value" id="lowStockCount">0</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">Out of Stock</span>
-                    <span class="stat-value" id="outOfStockCount">0</span>
-                </div>
-            </div>
-
-            <div class="table-container">
-                <table id="productTable">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Product Name</th>
-                            <th>Price (₱)</th>
-                            <th>Quantity</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <tr class="empty-message">
-                            <td colspan="6">No products found. Add your first product!</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="sidebar-footer">
+                <button class="btn-logout" id="logoutBtn">
+                    <span>🚪</span> Logout
+                </button>
             </div>
         </div>
-    </div>
 
-    <!-- Add/Edit Modal -->
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <div class="modal-header" id="modalTitle">Add New Product</div>
-            <form id="productForm">
-                <div class="form-group">
-                    <label for="productName">Product Name *</label>
-                    <input 
-                        type="text" 
-                        id="productName" 
-                        required
-                        placeholder="e.g., Rice, Sugar, Milk"
-                    >
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="topbar">
+                <button class="menu-toggle" id="menuToggle">☰</button>
+                <h1 class="page-title">Dashboard</h1>
+                <div class="user-info">
+                    <div class="user-avatar">👤</div>
+                    <span id="userName">User</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="content-wrapper">
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card stat-primary">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Total Products</div>
+                            <div class="stat-value" id="totalProducts">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card stat-success">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <div class="stat-label">In Stock</div>
+                            <div class="stat-value" id="inStockCount">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card stat-warning">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Low Stock</div>
+                            <div class="stat-value" id="lowStockCount">0</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card stat-danger">
+                        <div class="stat-icon">❌</div>
+                        <div class="stat-info">
+                            <div class="stat-label">Out of Stock</div>
+                            <div class="stat-value" id="outOfStockCount">0</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="productPrice">Price (₱) *</label>
-                    <input 
-                        type="number" 
-                        id="productPrice" 
-                        min="0" 
-                        step="0.01"
-                        required
-                        placeholder="0.00"
-                    >
-                </div>
+                <!-- Stock Tables -->
+                <div class="section-grid">
+                    <!-- In Stock Section -->
+                    <div class="section section-success">
+                        <div class="section-header">
+                            <div class="section-title-wrapper">
+                                <span class="section-icon">✅</span>
+                                <h3 class="section-title">In Stock Products</h3>
+                            </div>
+                            <span class="section-badge" id="inStockBadge">0</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inStockTable">
+                                    <tr><td colspan="3" class="empty-state">No products</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="productQuantity">Quantity *</label>
-                    <input 
-                        type="number" 
-                        id="productQuantity" 
-                        min="0" 
-                        required
-                        placeholder="0"
-                    >
-                </div>
+                    <!-- Low Stock Section -->
+                    <div class="section section-warning">
+                        <div class="section-header">
+                            <div class="section-title-wrapper">
+                                <span class="section-icon">⚠️</span>
+                                <h3 class="section-title">Low Stock Products</h3>
+                            </div>
+                            <span class="section-badge" id="lowStockBadge">0</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="lowStockTable">
+                                    <tr><td colspan="3" class="empty-state">No products</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
-                    <button type="submit" class="btn-save">Save Product</button>
+                    <!-- Out of Stock Section -->
+                    <div class="section section-danger">
+                        <div class="section-header">
+                            <div class="section-title-wrapper">
+                                <span class="section-icon">❌</span>
+                                <h3 class="section-title">Out of Stock Products</h3>
+                            </div>
+                            <span class="section-badge" id="outOfStockBadge">0</span>
+                        </div>
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="outOfStockTable">
+                                    <tr><td colspan="3" class="empty-state">No products</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 
