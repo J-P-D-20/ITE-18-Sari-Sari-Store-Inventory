@@ -3,197 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sari-Sari Store Inventory</title>
+    <title>Dashboard - Sari-Sari Store</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📦 Sari-Sari Store Inventory</h1>
-            <p>Manage your store inventory efficiently</p>
-        </div>
+    <div class="app-container">
+        <!-- Side Navigation -->
+        <nav class="sidenav">
+            <div class="sidenav-header">
+                <h2>🏪 Sari-Sari</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active">📊 Dashboard</a></li>
+                <li><a href="inventory.html" class="nav-link">📦 Inventory</a></li>
+                <li><a href="logs.html" class="nav-link">📋 Logs</a></li>
+            </ul>
+        </nav>
 
-        <div class="content">
-            <div class="controls">
-                <div class="search-container">
-                    <input 
-                        type="text" 
-                        id="searchInput" 
-                        placeholder="🔍 Search by product name..."
-                    >
-                </div>
-                <div class="button-group">
-                    <button class="btn-primary" id="addBtn">+ Add Product</button>
-                    <button class="btn-primary" id="clearSearchBtn" style="display: none;">Clear Search</button>
-                </div>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>📊 Dashboard</h1>
+                <p>Overview of your store inventory</p>
             </div>
 
-            <div class="stats">
-                <div class="stat-card">
-                    <span class="stat-label">Total Products</span>
-                    <span class="stat-value" id="totalProducts">0</span>
+            <div class="content">
+                <div class="stats">
+                    <div class="stat-card">
+                        <span class="stat-label">Total Products</span>
+                        <span class="stat-value" id="totalProducts">0</span>
+                    </div>
+                    <div class="stat-card stat-in-stock">
+                        <span class="stat-label">In Stock</span>
+                        <span class="stat-value" id="inStockCount">0</span>
+                    </div>
+                    <div class="stat-card stat-low">
+                        <span class="stat-label">Low Stock</span>
+                        <span class="stat-value" id="lowStockCount">0</span>
+                    </div>
+                    <div class="stat-card stat-out">
+                        <span class="stat-label">Out of Stock</span>
+                        <span class="stat-value" id="outOfStockCount">0</span>
+                    </div>
                 </div>
-                <div class="stat-card stat-in-stock">
-                    <span class="stat-label">In Stock</span>
-                    <span class="stat-value" id="inStockCount">0</span>
+
+                <!-- Top 5 Most Stocked Products -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>🏆 Top 5 Most Stocked Products</h2>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Product Name</th>
+                                    <th>Price (₱)</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topProductsBody">
+                                <tr class="empty-message">
+                                    <td colspan="4">No products available</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="stat-card stat-low">
-                    <span class="stat-label">Low Stock</span>
-                    <span class="stat-value" id="lowStockCount">0</span>
+
+                <!-- Low Stock Alert -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>⚠️ Low Stock Alert</h2>
+                        <span class="badge badge-warning" id="lowStockBadge">0</span>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Product Name</th>
+                                    <th>Price (₱)</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lowStockBody">
+                                <tr class="empty-message">
+                                    <td colspan="4">No low stock products</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="stat-card stat-out">
-                    <span class="stat-label">Out of Stock</span>
-                    <span class="stat-value" id="outOfStockCount">0</span>
+
+                <!-- Out of Stock -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>❌ Out of Stock</h2>
+                        <span class="badge badge-danger" id="outOfStockBadge">0</span>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Product Name</th>
+                                    <th>Price (₱)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="outOfStockBody">
+                                <tr class="empty-message">
+                                    <td colspan="3">No out of stock products</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-
-            <!-- Top 5 Most Stocked Products -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>🏆 Top 5 Most Stocked Products</h2>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Product Name</th>
-                                <th>Price (₱)</th>
-                                <th>Quantity</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="topProductsBody">
-                            <tr class="empty-message">
-                                <td colspan="5">No products available</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- In Stock Products -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>✅ In Stock Products</h2>
-                    <span class="badge badge-success" id="inStockBadge">0</span>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Product Name</th>
-                                <th>Price (₱)</th>
-                                <th>Quantity</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inStockBody">
-                            <tr class="empty-message">
-                                <td colspan="5">No products in stock</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Low Stock Products -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>⚠️ Low Stock Products</h2>
-                    <span class="badge badge-warning" id="lowStockBadge">0</span>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Product Name</th>
-                                <th>Price (₱)</th>
-                                <th>Quantity</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lowStockBody">
-                            <tr class="empty-message">
-                                <td colspan="5">No low stock products</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Out of Stock Products -->
-            <div class="section-card">
-                <div class="section-header">
-                    <h2>❌ Out of Stock Products</h2>
-                    <span class="badge badge-danger" id="outOfStockBadge">0</span>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Product Name</th>
-                                <th>Price (₱)</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="outOfStockBody">
-                            <tr class="empty-message">
-                                <td colspan="4">No out of stock products</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Add/Edit Modal -->
-    <div class="modal" id="productModal">
-        <div class="modal-content">
-            <div class="modal-header" id="modalTitle">Add New Product</div>
-            <form id="productForm">
-                <div class="form-group">
-                    <label for="productName">Product Name *</label>
-                    <input 
-                        type="text" 
-                        id="productName" 
-                        required
-                        placeholder="e.g., Rice, Sugar, Milk"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="productPrice">Price (₱) *</label>
-                    <input 
-                        type="number" 
-                        id="productPrice" 
-                        min="0" 
-                        step="0.01"
-                        required
-                        placeholder="0.00"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="productQuantity">Quantity *</label>
-                    <input 
-                        type="number" 
-                        id="productQuantity" 
-                        min="0" 
-                        required
-                        placeholder="0"
-                    >
-                </div>
-
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
-                    <button type="submit" class="btn-save">Save Product</button>
-                </div>
-            </form>
         </div>
     </div>
 
