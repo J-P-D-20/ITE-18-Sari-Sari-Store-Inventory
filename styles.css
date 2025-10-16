@@ -196,7 +196,7 @@ button {
 }
 
 .stat-card {
-    background: white;
+    background: linear-gradient(180deg, #3878ef 0%, #916ab8 100%);
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -210,21 +210,21 @@ button {
 }
 
 .stat-card.stat-in-stock {
-    border-left-color: #38ef7d;
+    background: linear-gradient(180deg, #38ef7d 0%, #916ab8 100%);
 }
 
 .stat-card.stat-low {
-    border-left-color: #f5576c;
+    background: linear-gradient(180deg, #f59157 0%, #916ab8 100%);
 }
 
 .stat-card.stat-out {
-    border-left-color: #fa709a;
+    background: linear-gradient(180deg, #fa709a 0%, #916ab8 100%);
 }
 
 .stat-label {
     display: block;
     font-size: 0.9em;
-    color: #666;
+    color: #ffffff;
     margin-bottom: 8px;
     font-weight: 500;
 }
@@ -233,7 +233,7 @@ button {
     display: block;
     font-size: 2.2em;
     font-weight: 700;
-    color: #333;
+    color: #ffffff;
 }
 
 .section-card {
@@ -533,4 +533,3 @@ tbody tr:hover:not(.empty-message) {
         font-size: 1.1em;
     }
 }
-
