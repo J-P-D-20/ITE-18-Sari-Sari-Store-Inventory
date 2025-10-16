@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs - Sari-Sari Store</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Side Navigation -->
+        <nav class="sidenav">
+            <div class="sidenav-header">
+                <h2>🏪 Sari-Sari</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">📊 Dashboard</a></li>
+                <li><a href="inventory.html" class="nav-link">📦 Inventory</a></li>
+                <li><a href="logs.html" class="nav-link active">📋 Logs</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>📋 Activity Logs</h1>
+                <p>History of all inventory changes</p>
+            </div>
+
+            <div class="content">
+                <div class="controls">
+                    <div class="search-container">
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="🔍 Search logs..."
+                        >
+                    </div>
+                    <div class="button-group">
+                        <select id="filterAction" class="filter-select">
+                            <option value="all">All Actions</option>
+                            <option value="added">Added</option>
+                            <option value="updated">Updated</option>
+                            <option value="deleted">Deleted</option>
+                        </select>
+                        <button class="btn-primary" id="clearLogsBtn">Clear All Logs</button>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <span class="stat-label">Total Logs</span>
+                        <span class="stat-value" id="totalLogs">0</span>
+                    </div>
+                    <div class="stat-card stat-in-stock">
+                        <span class="stat-label">Added</span>
+                        <span class="stat-value" id="addedCount">0</span>
+                    </div>
+                    <div class="stat-card stat-low">
+                        <span class="stat-label">Updated</span>
+                        <span class="stat-value" id="updatedCount">0</span>
+                    </div>
+                    <div class="stat-card stat-out">
+                        <span class="stat-label">Deleted</span>
+                        <span class="stat-value" id="deletedCount">0</span>
+                    </div>
+                </div>
+
+                <!-- Logs Table -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>📝 Activity History</h2>
+                        <span class="badge badge-success" id="logsBadge">0</span>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Action</th>
+                                    <th>Product</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logsBody">
+                                <tr class="empty-message">
+                                    <td colspan="4">No activity logs yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Logs functionality
+        let logs = JSON.parse(localStorage.getItem('inventoryLogs') || '[]');
+        let filteredLogs = [...logs];
+
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('en-PH', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function getActionBadge(action) {
+            const badges = {
+                'added': '<span class="action-badge badge-added">ADDED</span>',
+                'updated': '<span class="action-badge badge-updated">UPDATED</span>',
+                'deleted': '<span class="action-badge badge-deleted">DELETED</span>'
+            };
+            return badges[action] || action;
+        }
+
+        function renderLogs() {
+            const tbody = document.getElementById('logsBody');
+            
+            if (filteredLogs.length === 0) {
+                tbody.innerHTML = '<tr class="empty-message"><td colspan="4">No logs to display</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filteredLogs.map(log => `
+                <tr>
+                    <td>${formatTimestamp(log.timestamp)}</td>
+                    <td>${getActionBadge(log.action)}</td>
+                    <td><strong>${log.productName}</strong></td>
+                    <td>${log.details}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('totalLogs').textContent = logs.length;
+            document.getElementById('addedCount').textContent = logs.filter(l => l.action === 'added').length;
+            document.getElementById('updatedCount').textContent = logs.filter(l => l.action === 'updated').length;
+            document.getElementById('deletedCount').textContent = logs.filter(l => l.action === 'deleted').length;
+            document.getElementById('logsBadge').textContent = filteredLogs.length;
+        }
+
+        function filterLogs() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const actionFilter = document.getElementById('filterAction').value;
+
+            filteredLogs = logs.filter(log => {
+                const matchesSearch = log.productName.toLowerCase().includes(searchTerm) ||
+                                    log.details.toLowerCase().includes(searchTerm);
+                const matchesAction = actionFilter === 'all' || log.action === actionFilter;
+                return matchesSearch && matchesAction;
+            });
+
+            renderLogs();
+            document.getElementById('logsBadge').textContent = filteredLogs.length;
+        }
+
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterLogs);
+        document.getElementById('filterAction').addEventListener('change', filterLogs);
+
+        document.getElementById('clearLogsBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
+                logs = [];
+                filteredLogs = [];
+                localStorage.setItem('inventoryLogs', JSON.stringify(logs));
+                renderLogs();
+                updateStats();
+            }
+        });
+
+        // Initial render
+        renderLogs();
+        updateStats();
+    </script>
+</body>
+</html>
