@@ -1,17 +1,21 @@
 const API_URL = 'http://localhost:3000';
 
-// DOM Elements
 const addBtn = document.getElementById('addBtn');
 const searchInput = document.getElementById('searchInput');
 const clearSearchBtn = document.getElementById('clearSearchBtn');
 const productModal = document.getElementById('productModal');
 const productForm = document.getElementById('productForm');
 const cancelBtn = document.getElementById('cancelBtn');
-const tableBody = document.getElementById('tableBody');
 const modalTitle = document.getElementById('modalTitle');
 const productName = document.getElementById('productName');
 const productPrice = document.getElementById('productPrice');
 const productQuantity = document.getElementById('productQuantity');
+
+// Table bodies
+const topProductsBody = document.getElementById('topProductsBody');
+const inStockBody = document.getElementById('inStockBody');
+const lowStockBody = document.getElementById('lowStockBody');
+const outOfStockBody = document.getElementById('outOfStockBody');
 
 let allProducts = [];
 let isEditMode = false;
@@ -41,33 +45,57 @@ async function loadProducts() {
         const response = await fetch(`${API_URL}/displayData`);
         if (!response.ok) throw new Error('Failed to fetch products');
         allProducts = await response.json();
-        displayProducts(allProducts);
+        displayAllProducts(allProducts);
         updateStats();
     } catch (error) {
         console.error('Error loading products:', error);
-        showEmptyMessage('Failed to load products. Make sure the server is running.');
+        showEmptyMessage(topProductsBody, 5, 'Failed to load products. Make sure the server is running.');
+        showEmptyMessage(inStockBody, 5, 'Failed to load products.');
+        showEmptyMessage(lowStockBody, 5, 'Failed to load products.');
+        showEmptyMessage(outOfStockBody, 4, 'Failed to load products.');
     }
 }
 
-function displayProducts(products) {
-    tableBody.innerHTML = '';
+function displayAllProducts(products) {
+    // Filter products by category
+    const inStock = products.filter(p => p.Quantity >= 10);
+    const lowStock = products.filter(p => p.Quantity > 0 && p.Quantity < 10);
+    const outOfStock = products.filter(p => p.Quantity === 0);
+    
+    // Get top 5 most stocked
+    const topProducts = [...products]
+        .sort((a, b) => b.Quantity - a.Quantity)
+        .slice(0, 5);
+
+    // Display in respective tables
+    displayTopProducts(topProducts);
+    displayInStock(inStock);
+    displayLowStock(lowStock);
+    displayOutOfStock(outOfStock);
+
+    // Update badges
+    document.getElementById('inStockBadge').textContent = inStock.length;
+    document.getElementById('lowStockBadge').textContent = lowStock.length;
+    document.getElementById('outOfStockBadge').textContent = outOfStock.length;
+}
+
+function displayTopProducts(products) {
+    topProductsBody.innerHTML = '';
 
     if (products.length === 0) {
-        showEmptyMessage('No products found. Add your first product!');
+        showEmptyMessage(topProductsBody, 5, 'No products available');
         return;
     }
 
-    products.forEach((product) => {
+    products.forEach((product, index) => {
         const row = document.createElement('tr');
-        const status = getStatus(product.Quantity);
-        const statusClass = getStatusClass(product.Quantity);
+        const rankClass = index === 0 ? 'gold' : index === 1 ? 'silver' : index === 2 ? 'bronze' : '';
 
         row.innerHTML = `
-            <td>${product.id || 'N/A'}</td>
+            <td><span class="rank-badge ${rankClass}">${index + 1}</span></td>
             <td><strong>${product.ProductName}</strong></td>
             <td>₱${product.Price.toFixed(2)}</td>
             <td>${product.Quantity} units</td>
-            <td><span class="${statusClass}">${status}</span></td>
             <td>
                 <div class="action-buttons">
                     <button class="btn-small btn-edit" onclick="openEditModal(${product.id})">Edit</button>
@@ -76,26 +104,97 @@ function displayProducts(products) {
             </td>
         `;
 
-        tableBody.appendChild(row);
+        topProductsBody.appendChild(row);
     });
 }
 
-function getStatus(quantity) {
-    if (quantity === 0) return 'Out of Stock';
-    if (quantity < 10) return 'Low Stock';
-    return 'In Stock';
+function displayInStock(products) {
+    inStockBody.innerHTML = '';
+
+    if (products.length === 0) {
+        showEmptyMessage(inStockBody, 5, 'No products in stock');
+        return;
+    }
+
+    products.forEach((product) => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${product.id || 'N/A'}</td>
+            <td><strong>${product.ProductName}</strong></td>
+            <td>₱${product.Price.toFixed(2)}</td>
+            <td>${product.Quantity} units</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-small btn-edit" onclick="openEditModal(${product.id})">Edit</button>
+                    <button class="btn-small btn-delete" onclick="deleteProduct(${product.id})">Delete</button>
+                </div>
+            </td>
+        `;
+
+        inStockBody.appendChild(row);
+    });
 }
 
-function getStatusClass(quantity) {
-    if (quantity === 0) return 'status-out';
-    if (quantity < 10) return 'status-low';
-    return 'status-ok';
+function displayLowStock(products) {
+    lowStockBody.innerHTML = '';
+
+    if (products.length === 0) {
+        showEmptyMessage(lowStockBody, 5, 'No low stock products');
+        return;
+    }
+
+    products.forEach((product) => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${product.id || 'N/A'}</td>
+            <td><strong>${product.ProductName}</strong></td>
+            <td>₱${product.Price.toFixed(2)}</td>
+            <td>${product.Quantity} units</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-small btn-edit" onclick="openEditModal(${product.id})">Edit</button>
+                    <button class="btn-small btn-delete" onclick="deleteProduct(${product.id})">Delete</button>
+                </div>
+            </td>
+        `;
+
+        lowStockBody.appendChild(row);
+    });
 }
 
-function showEmptyMessage(message) {
-    tableBody.innerHTML = `
+function displayOutOfStock(products) {
+    outOfStockBody.innerHTML = '';
+
+    if (products.length === 0) {
+        showEmptyMessage(outOfStockBody, 4, 'No out of stock products');
+        return;
+    }
+
+    products.forEach((product) => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${product.id || 'N/A'}</td>
+            <td><strong>${product.ProductName}</strong></td>
+            <td>₱${product.Price.toFixed(2)}</td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-small btn-edit" onclick="openEditModal(${product.id})">Edit</button>
+                    <button class="btn-small btn-delete" onclick="deleteProduct(${product.id})">Delete</button>
+                </div>
+            </td>
+        `;
+
+        outOfStockBody.appendChild(row);
+    });
+}
+
+function showEmptyMessage(tbody, colspan, message) {
+    tbody.innerHTML = `
         <tr class="empty-message">
-            <td colspan="6">${message}</td>
+            <td colspan="${colspan}">${message}</td>
         </tr>
     `;
 }
@@ -206,20 +305,20 @@ function handleSearch() {
     const query = searchInput.value.toLowerCase().trim();
 
     if (query === '') {
-        displayProducts(allProducts);
+        displayAllProducts(allProducts);
         clearSearchBtn.style.display = 'none';
     } else {
         const filtered = allProducts.filter(product =>
             product.ProductName.toLowerCase().includes(query)
         );
-        displayProducts(filtered);
+        displayAllProducts(filtered);
         clearSearchBtn.style.display = 'block';
     }
 }
 
 function clearSearch() {
     searchInput.value = '';
-    displayProducts(allProducts);
+    displayAllProducts(allProducts);
     clearSearchBtn.style.display = 'none';
 }
 
@@ -234,7 +333,11 @@ async function updateStats() {
         const outOfStockResponse = await fetch(`${API_URL}/outOfStock`);
         const outOfStock = await outOfStockResponse.json();
 
+        // Calculate in stock (total - low stock - out of stock)
+        const inStockCount = total - lowStock.length - outOfStock.length;
+
         document.getElementById('totalProducts').textContent = total;
+        document.getElementById('inStockCount').textContent = inStockCount;
         document.getElementById('lowStockCount').textContent = lowStock.length;
         document.getElementById('outOfStockCount').textContent = outOfStock.length;
     } catch (error) {
