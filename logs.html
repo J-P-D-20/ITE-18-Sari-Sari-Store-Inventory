@@ -47,25 +47,6 @@
                     </div>
                 </div>
 
-                <div class="stats">
-                    <div class="stat-card">
-                        <span class="stat-label">Total Logs</span>
-                        <span class="stat-value" id="totalLogs">0</span>
-                    </div>
-                    <div class="stat-card stat-in-stock">
-                        <span class="stat-label">Added</span>
-                        <span class="stat-value" id="addedCount">0</span>
-                    </div>
-                    <div class="stat-card stat-low">
-                        <span class="stat-label">Updated</span>
-                        <span class="stat-value" id="updatedCount">0</span>
-                    </div>
-                    <div class="stat-card stat-out">
-                        <span class="stat-label">Deleted</span>
-                        <span class="stat-value" id="deletedCount">0</span>
-                    </div>
-                </div>
-
                 <!-- Logs Table -->
                 <div class="section-card">
                     <div class="section-header">
@@ -95,9 +76,26 @@
     </div>
 
     <script>
-        // Logs functionality
-        let logs = JSON.parse(localStorage.getItem('inventoryLogs') || '[]');
-        let filteredLogs = [...logs];
+        let logs = [];
+        let filteredLogs = [];
+
+        async function fetchLogs() {
+            try {
+                const response = await fetch('/displayLogs');
+                if (!response.ok) throw new Error('Failed to fetch logs');
+                logs = await response.json();
+                filteredLogs = [...logs];
+                renderLogs();
+            } catch (err) {
+                console.error('Error loading logs:', err);
+                const tbody = document.getElementById('logsBody');
+                tbody.innerHTML = `
+                    <tr class="empty-message">
+                        <td colspan="4">⚠️ Failed to load logs from server</td>
+                    </tr>
+                `;
+            }
+        }
 
         function formatTimestamp(timestamp) {
             const date = new Date(timestamp);
@@ -138,14 +136,6 @@
             `).join('');
         }
 
-        function updateStats() {
-            document.getElementById('totalLogs').textContent = logs.length;
-            document.getElementById('addedCount').textContent = logs.filter(l => l.action === 'added').length;
-            document.getElementById('updatedCount').textContent = logs.filter(l => l.action === 'updated').length;
-            document.getElementById('deletedCount').textContent = logs.filter(l => l.action === 'deleted').length;
-            document.getElementById('logsBadge').textContent = filteredLogs.length;
-        }
-
         function filterLogs() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const actionFilter = document.getElementById('filterAction').value;
@@ -161,23 +151,23 @@
             document.getElementById('logsBadge').textContent = filteredLogs.length;
         }
 
-        // Event listeners
         document.getElementById('searchInput').addEventListener('input', filterLogs);
         document.getElementById('filterAction').addEventListener('change', filterLogs);
 
-        document.getElementById('clearLogsBtn').addEventListener('click', () => {
+        document.getElementById('clearLogsBtn').addEventListener('click', async () => {
             if (confirm('Are you sure you want to clear all logs? This action cannot be undone.')) {
-                logs = [];
-                filteredLogs = [];
-                localStorage.setItem('inventoryLogs', JSON.stringify(logs));
-                renderLogs();
-                updateStats();
+                try {
+                    await fetch('/clearLogs', { method: 'DELETE' });
+                    logs = [];
+                    filteredLogs = [];
+                    renderLogs();
+                } catch (err) {
+                    console.error('Error clearing logs:', err);
+                }
             }
         });
 
-        // Initial render
-        renderLogs();
-        updateStats();
+        fetchLogs();
     </script>
 </body>
 </html>
