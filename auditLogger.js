@@ -2,7 +2,6 @@ import fs from 'fs/promises';
 
 const LOG_FILE = './audit.json'; // change to .json for structured logs
 
-// ✅ Write a log entry as JSON
 export async function logEvent(action, productName, details = "") {
     const logEntry = {
         timestamp: Date.now(),
@@ -14,12 +13,10 @@ export async function logEvent(action, productName, details = "") {
     try {
         let logs = [];
 
-        // Try reading existing logs first
         try {
             const data = await fs.readFile(LOG_FILE, 'utf-8');
             logs = JSON.parse(data);
         } catch {
-            // File might not exist yet — ignore
         }
 
         logs.push(logEntry);
@@ -30,7 +27,7 @@ export async function logEvent(action, productName, details = "") {
     }
 }
 
-// ✅ Read and return JSON logs
+// Read and return JSON logs
 export async function readLogs() {
     try {
         const data = await fs.readFile(LOG_FILE, 'utf-8');
@@ -40,3 +37,4 @@ export async function readLogs() {
         return [];
     }
 }
+
